@@ -1,28 +1,55 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment, useEffect } from 'react';
+import { Query, withApollo } from 'react-apollo';
+import { Grid, Card, CardActions } from '@material-ui/core';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import gql from 'graphql-tag';
 import logo from './logo.svg';
 import './index.scss';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+const GET_USERS = gql`
+  query getUsers($first: Int!) {
+    users(first: $first) {
+      id
+      exchangeBalances {
+        userAddress
+        ethWithdrawn
+        exchangeAddress
+        tokensWithdrawn
+        totalEthFeesPaid
+        totalTokenFeesPaid
+      }
+      txs {
+        id
+        timeStamp
+        ethAmount
+        tokenAmount
+        userAddress
+        exchangeAddress
+      }
+    }
   }
-}
+`;
 
-export default App;
+const Home = props => {
+  console.log(props);
+
+  return (
+    <Query query={GET_USERS} variables={{ first: 20 }}>
+      {({ loading, error, data }) => {
+        if (loading) return <LinearProgress color="primary" />;
+
+        console.log(data);
+        return (
+          <div className="Home">
+            <header className="App-header">
+              <img src={logo} className="App-logo" alt="logo" />
+              <ul />
+            </header>
+          </div>
+        );
+      }}
+    </Query>
+  );
+};
+
+export default withApollo(Home);
