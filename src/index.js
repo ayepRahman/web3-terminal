@@ -6,8 +6,8 @@ import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
-import './index.css';
-import App from './App';
+import './index.scss';
+import App from 'ui/app';
 import * as serviceWorker from './serviceWorker';
 
 // for the sake of demo, i wont be adding this to env var
