@@ -5,8 +5,9 @@ import { ApolloProvider } from 'react-apollo';
 import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import { SnackbarProvider } from 'notistack';
 
-import './index.scss';
+import 'styles/index.scss';
 import App from 'ui/app';
 import * as serviceWorker from './serviceWorker';
 
@@ -23,7 +24,9 @@ const client = new ApolloClient({
 ReactDOM.render(
   <BrowserRouter>
     <ApolloProvider client={client}>
-      <App />
+      <SnackbarProvider maxSnack={3}>
+        <App />
+      </SnackbarProvider>
     </ApolloProvider>
   </BrowserRouter>,
   document.getElementById('root'),

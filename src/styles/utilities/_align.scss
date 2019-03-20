@@ -1,0 +1,32 @@
+// stylelint-disable declaration-no-important
+
+.align-baseline {
+  vertical-align: baseline !important;
+} // Browser default
+.align-top {
+  vertical-align: top !important;
+}
+.align-middle {
+  vertical-align: middle !important;
+}
+.align-bottom {
+  vertical-align: bottom !important;
+}
+.align-text-bottom {
+  vertical-align: text-bottom !important;
+}
+.align-text-top {
+  vertical-align: text-top !important;
+}
+.align-self-auto {
+  align-self: auto;
+}
+.align-self-top {
+  align-self: initial;
+}
+.align-self-center {
+  align-self: center;
+}
+.align-self-bottom {
+  align-self: baseline;
+}
