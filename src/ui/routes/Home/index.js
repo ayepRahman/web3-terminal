@@ -17,7 +17,6 @@ import { withSnackbar } from 'notistack';
 import InfiniteScroll from 'react-infinite-scroller';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import routeTemplates from 'ui/routes/templates';
-
 import gql from 'graphql-tag';
 import './index.scss';
 
@@ -79,7 +78,6 @@ const Home = props => {
               user.ethBalance = ethBalance;
               return user;
             }
-
             return user;
           });
         const returnObj = Object.assign({}, prevResult, {

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withApollo, Query } from 'react-apollo';
 import { withRouter } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
+import {} from 'react-final-form-hooks';
 import axios from 'axios';
 import gql from 'graphql-tag';
 import {
@@ -74,13 +75,18 @@ const GET_ALL_USERS_FROM_CACHE = gql`
   ${USER_FRAGMENTS}
 `;
 
+/**
+ * TODO:
+ * - get users eth so i can pass values in the options
+ * - add react final form
+ */
+
 const UserDetails = props => {
   const [users, setUsers] = useState([]);
   const { client, match, enqueueSnackbar } = props;
   const userId = match && match.params && match.params.id;
-  // const currentUser = users.find(user => user.id === userId);
 
-  console.log(client);
+  console.log(users);
 
   useEffect(() => {
     getUsersFromCache();
@@ -165,7 +171,9 @@ const UserDetails = props => {
                 <Toolbar>
                   <h2>User Transactions</h2>
                   <div className="ml-auto">
-                    <UserTokenTransferButton id={user.id}>Send Transaction</UserTokenTransferButton>
+                    <UserTokenTransferButton user={user} users={users}>
+                      Send Transaction
+                    </UserTokenTransferButton>
                   </div>
                 </Toolbar>
                 <Table>
