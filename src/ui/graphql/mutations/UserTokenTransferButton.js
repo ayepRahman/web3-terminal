@@ -14,6 +14,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Switch from '@material-ui/core/Switch';
 
+/**
+ *
+ */
+
 const UserTokenTransferButton = props => {
   const [isOpen, setIsOpen] = useState(false);
 

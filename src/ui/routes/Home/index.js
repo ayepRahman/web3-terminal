@@ -21,8 +21,7 @@ import routeTemplates from 'ui/routes/templates';
 import gql from 'graphql-tag';
 import './index.scss';
 
-const etherScanApiKeys =
-  process.env.REACT_APP_ETHERSCAN_API_KEYS || 'C852K7V62PDKJ5AG3VRQCIRX55ZAWC8NWF';
+const etherScanApiKeys = process.env.REACT_APP_ETHERSCAN_API_KEYS;
 
 const GET_USERS = gql`
   query getUsers($first: Int, $skip: Int) {
@@ -111,7 +110,7 @@ const Home = props => {
 
         return (
           <Grid className="py-5" container justify="center">
-            <Grid item xs={10} md={6}>
+            <Grid item xs={10} md={8}>
               <Paper className="py-3 mb-3 text-center">
                 <h1>Web3 Terminal</h1>
               </Paper>
@@ -142,7 +141,6 @@ const Home = props => {
                     data.users &&
                     data.users.map((user, index) => {
                       getUserEthBalance(user.id, updateQuery);
-                      console.log(user);
                       return (
                         <Grid key={index} item xs={12} md={6}>
                           <Card>

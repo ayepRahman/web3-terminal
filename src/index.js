@@ -11,14 +11,14 @@ import 'styles/index.scss';
 import App from 'ui/app';
 import * as serviceWorker from './serviceWorker';
 
-// for the sake of demo, i wont be adding this to env var
-const uniSwapUri = process.env.REACT_APP_UNISWAP_URL || 'https://api.thegraph.com/subgraphs/name/graphprotocol/uniswap';
+const uniSwapUri = process.env.REACT_APP_UNISWAP_URL;
 
 const client = new ApolloClient({
   link: new HttpLink({
     uri: uniSwapUri,
   }),
   cache: new InMemoryCache(),
+  dataIdFromObject: object => object.id,
 });
 
 ReactDOM.render(
