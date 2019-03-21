@@ -1,6 +1,7 @@
 import React, { Component, Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
 import Web3 from 'web3';
+import { utils } from 'ethers';
 import { Query, withApollo } from 'react-apollo';
 import {
   Grid,
@@ -58,7 +59,7 @@ const Home = props => {
     const wei = response.data.result;
     console.log('WEI', wei);
 
-    const ethBalance = await web3.utils.fromWei(wei, 'ether');
+    const ethBalance = utils.formatEther(wei);
 
     console.log('ethBalance', ethBalance);
 
