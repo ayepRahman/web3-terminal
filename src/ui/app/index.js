@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import routeTemplates from 'ui/routes/templates';
 
 import Home from 'ui/routes/Home';
-import UserDetails from 'ui/routes/User';
+import UserDetails from 'ui/routes/UserDetails';
 
 export const App = () => {
   return (
