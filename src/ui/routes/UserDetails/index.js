@@ -99,7 +99,7 @@ const UserDetails = props => {
       });
       setUsers(users);
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
   };
 
@@ -108,16 +108,12 @@ const UserDetails = props => {
       const response = await axios(
         `https://api.etherscan.io/api?module=account&action=balance&address=${walletAddress}&tag=latest&apikey=${etherScanApiKeys}`,
       );
-
       const wei = response.data.result;
       const ethBalance = utils.formatEther(wei);
-
       const data = client.readQuery({ query: GET_SINGLE_USER, variables: { id: userId } });
       const userCache = data.user;
-      console.log('before userCache', userCache);
-      userCache.ethBalance = ethBalance;
-      console.log('after userCache', userCache);
 
+      userCache.ethBalance = ethBalance;
       client.writeQuery({
         query: GET_SINGLE_USER,
         data: {
