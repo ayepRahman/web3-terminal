@@ -1,15 +1,13 @@
+// NOTE: best practice for resolver is to pass a gql tag with all the params
+
 import gql from 'graphql-tag';
 
-export const GET_SINGLE_USER_BY_ID_STATE = gql`
-  query getUserById($id: ID!) {
-    getUserById(id: $id) @client
-  }
-`;
-
 const GET_ALL_USERS_STATE = gql`
-  query getAllUsers {
+  query GetAllUsers {
     store @client {
+      __typename
       users {
+        __typename
         id
         ethBalance
         exchangeBalances {
@@ -26,6 +24,7 @@ const GET_ALL_USERS_STATE = gql`
           tokensBought
           totalEthFeesPaid
           totalTokenFeesPaid
+          __typename
         }
         txs {
           id
@@ -38,6 +37,7 @@ const GET_ALL_USERS_STATE = gql`
           ethAmount
           tokenAmount
           fee
+          __typename
         }
       }
     }
@@ -59,20 +59,30 @@ export default {
       };
     } catch (error) {
       console.log(error.message);
+      return {
+        error: error.message,
+      };
     }
   },
   getAllUsers: (root, args, context) => {
     const { cache } = context;
     console.log('getUserById - resolver', cache);
 
-    // const data = {
-    //   loginModal: {
-    //     isOpen: !isOpen,
-    //     __typename: 'loginModal',
-    //   },
-    // };
+    try {
+      const { store } = cache.readQuery({
+        query: GET_ALL_USERS_STATE,
+      });
+      const users = store && store.users;
 
-    // cache.writeData({ data });
-    return null;
+      console.log(users);
+
+      return {
+        users,
+      };
+    } catch (error) {
+      return {
+        error: error.message,
+      };
+    }
   },
 };

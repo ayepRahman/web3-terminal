@@ -59,7 +59,7 @@ const UserDetails = props => {
                   <h2>User Transactions</h2>
                   {user && (
                     <div className="ml-auto">
-                      <UserTokenTransferButton user={user}>
+                      <UserTokenTransferButton currentUser={user}>
                         Send Transaction
                       </UserTokenTransferButton>
                     </div>
@@ -88,7 +88,9 @@ const UserDetails = props => {
                           )}
                           {tx && tx.exchangeAddress && <TableCell>{tx.exchangeAddress}</TableCell>}
                           {tx && tx.tokenSymbol && <TableCell>{tx.tokenSymbol}</TableCell>}
-                          {tx && tx.tokenAmount && <TableCell>{tx.tokenAmount}</TableCell>}
+                          {tx && tx.tokenAmount && (
+                            <TableCell>{utils.formatEther(tx.tokenAmount)}</TableCell>
+                          )}
                           {tx && tx.fee && (
                             <TableCell>{tx.fee && utils.formatEther(tx.fee)}</TableCell>
                           )}

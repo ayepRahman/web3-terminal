@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import axios from 'axios';
 import { utils } from 'ethers';
 import { Query, withApollo } from 'react-apollo';
@@ -12,6 +12,7 @@ import {
   CardContent,
   Button,
   Paper,
+  DialogActions,
 } from '@material-ui/core';
 import { withSnackbar } from 'notistack';
 import InfiniteScroll from 'react-infinite-scroller';

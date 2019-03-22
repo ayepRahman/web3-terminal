@@ -1,113 +1,228 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
 import { withApollo } from 'react-apollo';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Switch from '@material-ui/core/Switch';
+import { useForm, useField } from 'react-final-form-hooks';
+import {
+  Button,
+  DialogActions,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  FormHelperText,
+  TextField,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import { useForm, useField } from 'react-final-form-hooks';
+
+const GET_ALL_USERS_STATE = gql`
+  query getAllUsers {
+    getAllUsers @client
+  }
+`;
+
+const UPDATE_USERS_STATE = gql`
+  mutation updateUsers($users: [User]) {
+    updateUsers(users: $users) @client
+  }
+`;
+
+const fieldNames = {
+  sender: 'sender',
+  receiver: 'receiver',
+};
 
 const Form = props => {
-  const { form, handleSubmit, values, pristine, submitting } = useForm({
-    // onSubmit,
-    // validate,
+  const { options, currentUserEthBalance, currentUser, users, client } = props;
+  const [formState, setFormState] = useState({
+    [fieldNames.sender]: currentUserEthBalance,
+    [fieldNames.receiver]: '',
   });
 
-  const senderField = useField('sender', form);
-  const receiverField = useField('receiver', form);
+  const onSubmit = async values => {
+    const { sender, receiver } = values;
+    const senderTokenValue = sender;
+    const receiverTokenValue = receiver;
+    const receiverUser = users.find(user => user.ethBalance === receiverTokenValue);
 
-  const onTransferToken = values => {
-    console.log(values);
+    receiverUser.ethBalance = receiverUser.ethBalance + senderTokenValue;
+    currentUser.ethBalance = currentUserEthBalance - senderTokenValue;
+
+    const updatedUsersArray = [...users, receiverUser, currentUser];
+
+    debugger;
+
+    try {
+      await client.mutate({
+        mutation: UPDATE_USERS_STATE,
+        variables: {
+          users: updatedUsersArray,
+        },
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const validate = values => {
+    const errors = {};
+    if (!values[fieldNames.sender]) {
+      errors[fieldNames.sender] = 'Required';
+    }
+    if (!values[fieldNames.receiver]) {
+      errors[fieldNames.receiver] = 'Required';
+    }
+    if (values[fieldNames.sender] > currentUserEthBalance) {
+      errors[fieldNames.sender] = 'Exceeded Token Balance!';
+    }
+    return errors;
+  };
+
+  const { form, handleSubmit, submitting } = useForm({
+    onSubmit,
+    validate,
+  });
+  const sender = useField('sender', form);
+  const receiver = useField('receiver', form);
+
+  const handleChange = field => event => {
+    const { input } = field;
+    setFormState({
+      ...formState,
+      [event.target.name]: event.target.value,
+    });
+    input.onChange(event.target.value);
   };
 
   return (
-    <form onSubmit={handleSubmit(onTransferToken)}>
+    <form onSubmit={handleSubmit}>
       <div>
-        <label>First Name</label>
-        <input {...senderField.input} placeholder="First Name" />
-        {senderField.meta.touched && senderField.meta.error && (
-          <span>{senderField.meta.error}</span>
-        )}
+        <TextField
+          id={fieldNames.sender}
+          name={fieldNames.sender}
+          fullWidth
+          error={!!sender.meta.touched && !!sender.meta.error}
+          label={!!sender.meta.touched && !!sender.meta.error ? sender.meta.error : 'Token Amount'}
+          value={formState[fieldNames.sender]}
+          defaultValue={currentUserEthBalance}
+          onChange={handleChange(sender)}
+          type="number"
+        />
+        <FormHelperText>User Token - {currentUserEthBalance}</FormHelperText>
       </div>
-      <div>
-        <label>Last Name</label>
-        <input {...receiverField.input} placeholder="Last Name" />
-        {receiverField.meta.touched && receiverField.meta.error && (
-          <span>{receiverField.meta.error}</span>
-        )}
+
+      <div className="text-center pt-3">
+        <h1>To</h1>
       </div>
-      <div className="buttons">
-        <button type="submit" disabled={submitting}>
-          Submit
-        </button>
-        <button type="button" onClick={() => form.reset()} disabled={submitting || pristine}>
-          Reset
-        </button>
+
+      <div className="py-3">
+        <FormControl fullWidth>
+          <InputLabel htmlFor="age-simple">Exchange Address</InputLabel>
+          <Select
+            id={fieldNames.receiver}
+            name={fieldNames.receiver}
+            value={formState[fieldNames.receiver]}
+            onChange={handleChange(receiver)}
+          >
+            {options.map(option => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+          {receiver.meta.touched && receiver.meta.error && (
+            <FormHelperText>{receiver.meta.error}</FormHelperText>
+          )}
+        </FormControl>
       </div>
-      <pre>{JSON.stringify(values, undefined, 2)}</pre>
+
+      <DialogActions>
+        <Button variant="outlined" type="submit" disabled={submitting}>
+          Transfer
+        </Button>
+      </DialogActions>
     </form>
   );
 };
 
 const UserTokenTransferButton = props => {
   const [isOpen, setIsOpen] = useState(false);
+  const [usersState, setUsersState] = useState([]);
   const [options, setOptions] = useState([]);
-  const { children, user, users } = props;
+  const { children, currentUser, client } = props;
 
   useEffect(() => {
-    if (user && users) {
-      filterOptions();
+    getAllUsersFromState();
+    console.log('getAllUsersFromState');
+  }, []);
+
+  useEffect(() => {
+    filterOptions();
+    console.log('filterOptions');
+  }, [usersState]);
+
+  const getAllUsersFromState = async () => {
+    try {
+      const { data } = await client.query({
+        query: GET_ALL_USERS_STATE,
+      });
+
+      const users = data && data.getAllUsers && data.getAllUsers.users;
+
+      setUsersState(users);
+    } catch (error) {
+      console.log(error.message);
     }
-  });
+  };
 
   const filterOptions = () => {
-    const usersOptions = users
-      .filter(elem => elem.id !== user.id)
-      .map(elem => {
-        console.log(elem);
+    const usersOptions =
+      usersState &&
+      usersState
+        .filter(elem => elem.id !== currentUser.id)
+        .map(elem => {
+          console.log(elem);
 
-        return {
-          label: elem.id,
-          value: elem.ethBalance,
-        };
-      });
-    console.log('usersOptions', usersOptions);
+          return {
+            label: elem.id,
+            value: elem.ethBalance,
+          };
+        });
+    setOptions(usersOptions);
   };
 
   const renderDialog = () => {
     return (
       <Dialog
         fullWidth
-        maxWidth="lg"
+        maxWidth="sm"
         open={isOpen}
         onClose={() => setIsOpen(false)}
         aria-labelledby="token-transfer-modal"
       >
         <DialogTitle id="token-transfer-modal">
-          <IconButton className="" aria-label="Close" onClick={() => setIsOpen(false)}>
-            <CloseIcon />
-          </IconButton>
+          <DialogActions>
+            <IconButton aria-label="Close" onClick={() => setIsOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+          </DialogActions>
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            <Form />
+            <Form
+              client={client}
+              options={options}
+              currentUserEthBalance={currentUser.ethBalance}
+              currentUser={currentUser}
+              users={usersState}
+            />
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsOpen(false)} color="primary">
-            Close
-          </Button>
-        </DialogActions>
       </Dialog>
     );
   };

@@ -14,6 +14,7 @@
     "final-form": "^4.12.0",
     "graphql": "^14.1.1",
     "graphql-tag": "^2.10.1",
+    "keygenerator": "^1.0.4",
     "moment": "^2.24.0",
     "node-sass": "^4.11.0",
     "notistack": "^0.5.1",
