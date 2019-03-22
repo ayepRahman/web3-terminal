@@ -3,7 +3,9 @@ export default {
     // using clientState defaults to manipulate signUpModal isOpen variables
 
     const data = {
-      users,
+      store: {
+        users,
+      },
     };
 
     cache.writeData({ data });

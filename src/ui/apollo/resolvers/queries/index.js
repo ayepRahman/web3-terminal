@@ -1,6 +1,6 @@
 export default {
-  getUserById: (root, { user }, { cache }) => {
-    console.log('getUserById - resolve', cache);
+  getUserById: (root, { user }, context) => {
+    console.log('getUserById - resolver', context);
 
     // const data = {
     //   loginModal: {
