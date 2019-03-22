@@ -49,7 +49,6 @@ const Form = props => {
   const updateUserTransaction = async (walletAddress, tokenAmount) => {
     let wei = utils.parseEther(tokenAmount);
     try {
-      debugger;
       return {
         id: keygen._(),
         timeStamp: Date.now() / 1000,
@@ -77,15 +76,11 @@ const Form = props => {
       const receiverUserTxs = await updateUserTransaction(receiverUser.id, sender);
       const currentUserTxs = await updateUserTransaction(receiverUser.id, sender);
 
-      debugger;
       if (receiverUserTxs && currentUserTxs) {
-        debugger;
         receiverUser.txs = [receiverUserTxs, ...receiverUser.txs];
         currentUser.txs = [currentUserTxs, ...currentUser.txs];
 
         const updatedUsersArray = [...users, receiverUser, currentUser];
-
-        debugger;
 
         await client.mutate({
           mutation: UPDATE_USERS_STATE,

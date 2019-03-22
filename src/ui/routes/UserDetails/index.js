@@ -35,8 +35,6 @@ const UserDetails = props => {
 
         if (loading) return <LinearProgress />;
 
-        debugger;
-
         return (
           <Grid className="py-5" container justify="center">
             <Grid className="pb-3" item xs={5}>
