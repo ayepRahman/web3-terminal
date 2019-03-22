@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { ApolloProvider } from 'react-apollo';
 import { ApolloClient } from 'apollo-client';
+import { ApolloLink } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { withClientState } from 'apollo-link-state';
@@ -34,11 +35,15 @@ const clientStateLink = withClientState({
   cache: apolloCache,
 });
 
+const httpLink = new HttpLink({
+  uri: uniSwapUri,
+});
+
+const combineLinks = ApolloLink.from([clientStateLink, httpLink]);
+
 const client = new ApolloClient({
-  link: new HttpLink({
-    uri: uniSwapUri,
-  }),
-  cache: clientStateLink,
+  link: combineLinks,
+  cache: apolloCache,
 });
 
 ReactDOM.render(

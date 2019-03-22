@@ -12,6 +12,7 @@ const UserExchangeBalance = {
   tokensBought: '',
   totalEthFeesPaid: '',
   totalTokenFeesPaid: '',
+  __typename: 'UserExchangeBalance',
 };
 
 const Transaction = {
@@ -25,14 +26,18 @@ const Transaction = {
   ethAmount: '',
   tokenAmount: '',
   fee: '',
+  __typename: 'Transaction',
 };
 
 const user = {
   id: '',
   exchangeBalances: [UserExchangeBalance],
   txs: [Transaction],
+  __typename: 'User',
 };
 
 export const defaults = {
-  users: [user],
+  store: {
+    users: [user],
+  },
 };
