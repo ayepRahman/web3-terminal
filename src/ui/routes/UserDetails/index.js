@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { withApollo, Query } from 'react-apollo';
 import { withRouter } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
@@ -34,6 +34,8 @@ const UserDetails = props => {
         const user = data && data.getUserById && data.getUserById.user;
 
         if (loading) return <LinearProgress />;
+
+        debugger;
 
         return (
           <Grid className="py-5" container justify="center">

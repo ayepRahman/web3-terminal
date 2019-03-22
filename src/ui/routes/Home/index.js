@@ -22,7 +22,8 @@ import routeTemplates from 'ui/routes/templates';
 import gql from 'graphql-tag';
 import './index.scss';
 
-const etherScanApiKeys = process.env.REACT_APP_ETHERSCAN_API_KEYS;
+const etherScanApiKeys =
+  process.env.REACT_APP_ETHERSCAN_API_KEYS || 'C852K7V62PDKJ5AG3VRQCIRX55ZAWC8NWF';
 
 const GET_USERS = gql`
   query getUsers($first: Int, $skip: Int) {
@@ -202,14 +203,16 @@ const Home = props => {
                               </CardContent>
                             </CardActionArea>
                             <CardActions>
-                              <Button
-                                size="small"
-                                onClick={() =>
-                                  history.push(`${routeTemplates.user.root}/${user.id}`, { user })
-                                }
-                              >
-                                View More
-                              </Button>
+                              <DialogActions className="ml-auto">
+                                <Button
+                                  size="small"
+                                  onClick={() =>
+                                    history.push(`${routeTemplates.user.root}/${user.id}`, { user })
+                                  }
+                                >
+                                  View More
+                                </Button>
+                              </DialogActions>
                             </CardActions>
                           </Card>
                         </Grid>

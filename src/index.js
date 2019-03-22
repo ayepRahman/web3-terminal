@@ -17,7 +17,9 @@ import 'styles/index.scss';
 import App from 'ui/app';
 import * as serviceWorker from './serviceWorker';
 
-const uniSwapUri = process.env.REACT_APP_UNISWAP_URL;
+const uniSwapUri =
+  process.env.REACT_APP_UNISWAP_URL ||
+  'https://api.thegraph.com/subgraphs/name/graphprotocol/uniswap';
 const apolloCache = new InMemoryCache();
 
 /**

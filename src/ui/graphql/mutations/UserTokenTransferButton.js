@@ -19,6 +19,8 @@ import {
 } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import keygen from 'keygenerator';
+import { utils } from 'ethers';
 
 const GET_ALL_USERS_STATE = gql`
   query getAllUsers {
@@ -38,11 +40,29 @@ const fieldNames = {
 };
 
 const Form = props => {
-  const { options, currentUserEthBalance, currentUser, users, client } = props;
+  const { options, currentUserEthBalance, currentUser, users, client, setIsOpen } = props;
   const [formState, setFormState] = useState({
     [fieldNames.sender]: currentUserEthBalance,
     [fieldNames.receiver]: '',
   });
+
+  const updateUserTransaction = async (walletAddress, tokenAmount) => {
+    let wei = utils.parseEther(tokenAmount);
+    try {
+      debugger;
+      return {
+        id: keygen._(),
+        timeStamp: Date.now() / 1000,
+        exchangeAddress: walletAddress,
+        tokenSymbol: 'ETH',
+        tokenAmount: wei,
+        fee: utils.parseEther('0.000002'), // probably use ether.js to calculate gas price
+        block: 7129320 + users.length, //
+      };
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   const onSubmit = async values => {
     const { sender, receiver } = values;
@@ -53,17 +73,28 @@ const Form = props => {
     receiverUser.ethBalance = receiverUser.ethBalance + senderTokenValue;
     currentUser.ethBalance = currentUserEthBalance - senderTokenValue;
 
-    const updatedUsersArray = [...users, receiverUser, currentUser];
-
-    debugger;
-
     try {
-      await client.mutate({
-        mutation: UPDATE_USERS_STATE,
-        variables: {
-          users: updatedUsersArray,
-        },
-      });
+      const receiverUserTxs = await updateUserTransaction(receiverUser.id, sender);
+      const currentUserTxs = await updateUserTransaction(receiverUser.id, sender);
+
+      debugger;
+      if (receiverUserTxs && currentUserTxs) {
+        debugger;
+        receiverUser.txs = [receiverUserTxs, ...receiverUser.txs];
+        currentUser.txs = [currentUserTxs, ...currentUser.txs];
+
+        const updatedUsersArray = [...users, receiverUser, currentUser];
+
+        debugger;
+
+        await client.mutate({
+          mutation: UPDATE_USERS_STATE,
+          variables: {
+            users: updatedUsersArray,
+          },
+        });
+        setIsOpen(false);
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -107,7 +138,9 @@ const Form = props => {
           name={fieldNames.sender}
           fullWidth
           error={!!sender.meta.touched && !!sender.meta.error}
-          label={!!sender.meta.touched && !!sender.meta.error ? sender.meta.error : 'Token Amount'}
+          label={
+            !!sender.meta.touched && !!sender.meta.error ? sender.meta.error : 'Token Amount (Eth)'
+          }
           value={formState[fieldNames.sender]}
           defaultValue={currentUserEthBalance}
           onChange={handleChange(sender)}
@@ -220,6 +253,7 @@ const UserTokenTransferButton = props => {
               currentUserEthBalance={currentUser.ethBalance}
               currentUser={currentUser}
               users={usersState}
+              setIsOpen={setIsOpen}
             />
           </DialogContentText>
         </DialogContent>
