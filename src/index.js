@@ -17,8 +17,6 @@ import 'styles/index.scss';
 import App from 'ui/app';
 import * as serviceWorker from './serviceWorker';
 
-console.log('resolvers', resolvers);
-
 const uniSwapUri = process.env.REACT_APP_UNISWAP_URL;
 const apolloCache = new InMemoryCache();
 

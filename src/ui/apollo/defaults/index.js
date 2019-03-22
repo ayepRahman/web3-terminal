@@ -4,16 +4,16 @@ const UserExchangeBalance = {
   id: '',
   userAddress: '',
   exchangeAddress: '',
-  ethDeposited: '',
-  tokensDeposited: '',
-  uniTokensMinted: '',
-  uniTokensBurned: '',
-  ethWithdrawn: '',
-  tokensWithdrawn: '',
-  ethBought: '',
-  tokensBought: '',
-  totalEthFeesPaid: '',
-  totalTokenFeesPaid: '',
+  ethDeposited: 0,
+  tokensDeposited: 0,
+  uniTokensMinted: 0,
+  uniTokensBurned: 0,
+  ethWithdrawn: 0,
+  tokensWithdrawn: 0,
+  ethBought: 0,
+  tokensBought: 0,
+  totalEthFeesPaid: 0,
+  totalTokenFeesPaid: 0,
   __typename: 'UserExchangeBalance',
 };
 
@@ -25,14 +25,15 @@ const Transaction = {
   exchangeAddress: '',
   tokenSymbol: '',
   userAddress: '',
-  ethAmount: '',
-  tokenAmount: '',
-  fee: '',
+  ethAmount: 0,
+  tokenAmount: 0,
+  fee: 0,
   __typename: 'Transaction',
 };
 
 const User = {
   id: '',
+  ethBalance: 0,
   exchangeBalances: [UserExchangeBalance],
   txs: [Transaction],
   __typename: 'User',
@@ -41,6 +42,6 @@ const User = {
 export const defaults = {
   store: {
     users: [User],
-    __typename: 'Users',
+    __typename: 'Store',
   },
 };

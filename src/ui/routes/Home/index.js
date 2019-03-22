@@ -16,6 +16,7 @@ import {
 import { withSnackbar } from 'notistack';
 import InfiniteScroll from 'react-infinite-scroller';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import routeTemplates from 'ui/routes/templates';
 import gql from 'graphql-tag';
 import './index.scss';
@@ -57,13 +58,9 @@ const GET_USERS = gql`
   }
 `;
 
-// mutation updateUsers($users: String) {
-//   updateUsers(users: $user) @client
-// }
-
 const UPDATE_USERS_STATE = gql`
-  mutation updateUsers($id: String!, $users: [User]) {
-    updateUsers(id: $id, users: $users) @client
+  mutation updateUsers($users: [User]) {
+    updateUsers(users: $users) @client
   }
 `;
 
@@ -102,13 +99,10 @@ const Home = props => {
   };
 
   const updateUsersState = async users => {
-    console.log('USERS', users);
-
     try {
       await client.mutate({
         mutation: UPDATE_USERS_STATE,
         variables: {
-          id: 'Test',
           users,
         },
       });
@@ -157,8 +151,8 @@ const Home = props => {
                 }}
                 hasMore={true}
                 loader={
-                  <Grid className="pt-5" item xs={12}>
-                    <LinearProgress color="primary" />
+                  <Grid className="pt-5 text-center" item xs={12}>
+                    <CircularProgress />
                   </Grid>
                 }
               >
@@ -167,6 +161,17 @@ const Home = props => {
                     data.users &&
                     data.users.map((user, index) => {
                       getUserEthBalance(user.id, updateQuery);
+
+                      if (!user.ethBalance) {
+                        return (
+                          <Grid key={index} item xs={12} md={6}>
+                            <Paper className="p-5 text-center">
+                              <CircularProgress />
+                            </Paper>
+                          </Grid>
+                        );
+                      }
+
                       return (
                         <Grid key={index} item xs={12} md={6}>
                           <Card>
