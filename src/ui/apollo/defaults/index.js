@@ -1,3 +1,5 @@
+// Apollo Defaults - https://www.apollographql.com/docs/link/links/state.html#defaults
+
 const UserExchangeBalance = {
   id: '',
   userAddress: '',
