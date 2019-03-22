@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
 import { utils } from 'ethers';
 import { Query, withApollo } from 'react-apollo';
@@ -57,8 +57,18 @@ const GET_USERS = gql`
   }
 `;
 
+// mutation updateUsers($users: String) {
+//   updateUsers(users: $user) @client
+// }
+
+const UPDATE_USERS_STATE = gql`
+  mutation updateUsers($id: String!, $users: [User]) {
+    updateUsers(id: $id, users: $users) @client
+  }
+`;
+
 const Home = props => {
-  const { enqueueSnackbar, history } = props;
+  const { enqueueSnackbar, history, client } = props;
 
   const getUserEthBalance = async (walletAddress, updateQuery) => {
     try {
@@ -91,6 +101,22 @@ const Home = props => {
     }
   };
 
+  const updateUsersState = async users => {
+    console.log('USERS', users);
+
+    try {
+      await client.mutate({
+        mutation: UPDATE_USERS_STATE,
+        variables: {
+          id: 'Test',
+          users,
+        },
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <Query query={GET_USERS} variables={{ first: 4 }}>
       {({ loading, error, data, fetchMore, updateQuery }) => {
@@ -105,6 +131,8 @@ const Home = props => {
             ),
           });
         }
+
+        updateUsersState(data && data.users);
 
         return (
           <Grid className="py-5" container justify="center">

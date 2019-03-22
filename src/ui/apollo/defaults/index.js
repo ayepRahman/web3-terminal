@@ -31,7 +31,7 @@ const Transaction = {
   __typename: 'Transaction',
 };
 
-const user = {
+const User = {
   id: '',
   exchangeBalances: [UserExchangeBalance],
   txs: [Transaction],
@@ -40,6 +40,7 @@ const user = {
 
 export const defaults = {
   store: {
-    users: [user],
+    users: [User],
+    __typename: 'Users',
   },
 };

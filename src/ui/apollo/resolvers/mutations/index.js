@@ -1,6 +1,7 @@
 export default {
-  updateUsers: (root, { users }, { cache }) => {
+  updateUsers: (root, { id, users }, { cache }) => {
     // using clientState defaults to manipulate signUpModal isOpen variables
+    console.log('updateUsers - resolver', users);
 
     const data = {
       store: {
