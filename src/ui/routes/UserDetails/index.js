@@ -75,6 +75,11 @@ const GET_ALL_USERS_FROM_CACHE = gql`
   ${USER_FRAGMENTS}
 `;
 
+const CONVERT_TYPES = {
+  single: 'single',
+  multi: 'multi',
+};
+
 /**
  * TODO:
  * - get users eth so i can pass values in the options
@@ -104,28 +109,44 @@ const UserDetails = props => {
         query: GET_ALL_USERS_FROM_CACHE,
       });
       setUsers(users);
+      users.forEach(user => getUserEthBalance(user, CONVERT_TYPES.multi));
     } catch (error) {
       console.log(error.message);
     }
   };
 
-  const getUserEthBalance = async walletAddress => {
+  const getUserEthBalance = async (user, convertTypes) => {
+    const walletAddress = user.id;
+
     try {
       const response = await axios(
         `https://api.etherscan.io/api?module=account&action=balance&address=${walletAddress}&tag=latest&apikey=${etherScanApiKeys}`,
       );
       const wei = response.data.result;
       const ethBalance = utils.formatEther(wei);
-      const data = client.readQuery({ query: GET_SINGLE_USER, variables: { id: userId } });
-      const userCache = data.user;
 
-      userCache.ethBalance = ethBalance;
-      client.writeQuery({
-        query: GET_SINGLE_USER,
-        data: {
-          user: userCache, // merge data
-        },
-      });
+      if (convertTypes === CONVERT_TYPES.single) {
+        const data = client.readQuery({ query: GET_SINGLE_USER, variables: { id: userId } });
+        const userCache = data.user;
+        userCache.ethBalance = ethBalance;
+        client.writeQuery({
+          query: GET_SINGLE_USER,
+          data: {
+            user: userCache,
+          },
+        });
+      } else if (convertTypes === CONVERT_TYPES.multi) {
+        user.ethBalance = ethBalance;
+        const mergedUsers = [...users, ...user];
+        console.log(mergedUsers);
+        setUsers(mergedUsers);
+        client.writeQuery({
+          query: GET_ALL_USERS_FROM_CACHE,
+          data: {
+            users: mergedUsers,
+          },
+        });
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -149,7 +170,7 @@ const UserDetails = props => {
           });
         }
 
-        getUserEthBalance(user.id);
+        getUserEthBalance(user, CONVERT_TYPES.single);
 
         return (
           <Grid className="py-5" container justify="center">
