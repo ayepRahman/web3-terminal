@@ -5,20 +5,40 @@ import { ApolloProvider } from 'react-apollo';
 import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import { withClientState } from 'apollo-link-state';
 import { SnackbarProvider } from 'notistack';
+
+// APOLLO CLIENTSTATE
+import { defaults } from 'ui/apollo/defaults';
+import { resolvers } from 'ui/apollo/resolvers';
 
 import 'styles/index.scss';
 import App from 'ui/app';
 import * as serviceWorker from './serviceWorker';
 
 const uniSwapUri = process.env.REACT_APP_UNISWAP_URL;
+const apolloCache = new InMemoryCache();
+
+/**
+ * Conclusion to apollo client direct cache, very BUGGY!
+ * BUG FOUND!: readQuery can only be access when both query
+ * and variables are the same as the cache data.
+ * Follow up link:
+ * https://github.com/apollographql/apollo-client/issues/2051#issuecomment-341696989
+ * Solution: Use apollo client state state instead =)
+ */
+
+const clientStateLink = withClientState({
+  defaults,
+  resolvers,
+  cache: apolloCache,
+});
 
 const client = new ApolloClient({
   link: new HttpLink({
     uri: uniSwapUri,
   }),
-  cache: new InMemoryCache(),
-  dataIdFromObject: object => object.id,
+  cache: clientStateLink,
 });
 
 ReactDOM.render(

@@ -100,7 +100,7 @@ const UserTokenTransferButton = props => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            You can set my maximum width and whether to adapt or not.
+            <Form />
           </DialogContentText>
         </DialogContent>
         <DialogActions>

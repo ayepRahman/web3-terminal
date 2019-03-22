@@ -91,7 +91,7 @@ const UserDetails = props => {
   const { client, match, enqueueSnackbar } = props;
   const userId = match && match.params && match.params.id;
 
-  console.log(users);
+  console.log('USERS', users);
 
   useEffect(() => {
     getUsersFromCache();
@@ -126,6 +126,7 @@ const UserDetails = props => {
       const ethBalance = utils.formatEther(wei);
 
       if (convertTypes === CONVERT_TYPES.single) {
+        console.log('CONVERT_TYPES.single');
         const data = client.readQuery({ query: GET_SINGLE_USER, variables: { id: userId } });
         const userCache = data.user;
         userCache.ethBalance = ethBalance;
@@ -136,9 +137,16 @@ const UserDetails = props => {
           },
         });
       } else if (convertTypes === CONVERT_TYPES.multi) {
+        console.log('CONVERT_TYPES.multi');
         user.ethBalance = ethBalance;
-        const mergedUsers = [...users, ...user];
-        console.log(mergedUsers);
+        debugger;
+        const mergedUsers = [...users, user].reduce((acc, elem) => {
+          if (acc.filter(elemi => elemi.id === elem.id)[0])
+            acc.filter(elemi => elemi.id === elem.id)[0].val += elem.val;
+          else acc.push(elem);
+          return acc;
+        }, []);
+        debugger;
         setUsers(mergedUsers);
         client.writeQuery({
           query: GET_ALL_USERS_FROM_CACHE,
