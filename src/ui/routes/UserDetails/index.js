@@ -60,7 +60,7 @@ const UserDetails = props => {
                   {user && (
                     <div className="ml-auto">
                       <UserTokenTransferButton currentUser={user}>
-                        Send Transaction
+                        Transfer Eth Token
                       </UserTokenTransferButton>
                     </div>
                   )}
