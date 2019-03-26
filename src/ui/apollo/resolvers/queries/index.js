@@ -5,9 +5,7 @@ import gql from 'graphql-tag';
 const GET_ALL_USERS_STATE = gql`
   query GetAllUsers {
     store @client {
-      __typename
       users {
-        __typename
         id
         ethBalance
         exchangeBalances {
@@ -24,7 +22,6 @@ const GET_ALL_USERS_STATE = gql`
           tokensBought
           totalEthFeesPaid
           totalTokenFeesPaid
-          __typename
         }
         txs {
           id
@@ -37,7 +34,6 @@ const GET_ALL_USERS_STATE = gql`
           ethAmount
           tokenAmount
           fee
-          __typename
         }
       }
     }
@@ -66,17 +62,12 @@ export default {
   },
   getAllUsers: (root, args, context) => {
     const { cache } = context;
-    console.log('getUserById - resolver', cache);
-
-    debugger;
 
     try {
       const { store } = cache.readQuery({
         query: GET_ALL_USERS_STATE,
       });
       const users = store && store.users;
-
-      console.log(users);
 
       return {
         users,

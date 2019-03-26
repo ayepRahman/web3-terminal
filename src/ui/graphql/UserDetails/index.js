@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { withApollo, Query } from 'react-apollo';
 import { withRouter } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
+import { useWeb3Context } from 'web3-react';
 import gql from 'graphql-tag';
 import {
   Grid,
@@ -14,7 +15,6 @@ import {
   Toolbar,
 } from '@material-ui/core';
 import moment from 'moment';
-import { utils } from 'ethers';
 import UserTokenTransferButton from 'ui/graphql/UserTokenTransferButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
@@ -25,8 +25,18 @@ export const GET_SINGLE_USER_BY_ID_STATE = gql`
 `;
 
 const UserDetails = props => {
+  const web3Context = useWeb3Context();
+  const { setConnector, library } = web3Context;
   const { match } = props;
   const userId = match && match.params && match.params.id;
+
+  useEffect(() => {
+    const web3Library = web3Context.connectorName === 'infura' && web3Context.library;
+
+    if (!web3Library) {
+      setConnector('infura');
+    }
+  }, []);
 
   return (
     <Query query={GET_SINGLE_USER_BY_ID_STATE} variables={{ id: userId }}>
@@ -38,8 +48,8 @@ const UserDetails = props => {
         return (
           <Grid className="py-5" container justify="center">
             <Grid className="pb-3" item xs={5}>
-              <Paper className="p-3">
-                <h2 className="text-center ">User Details</h2>
+              <Paper className="p-3 text-center">
+                <h2>User Details</h2>
                 {user && user.id && (
                   <p>
                     <b>Wallet Address</b> - {user.id}
@@ -79,8 +89,8 @@ const UserDetails = props => {
                   <TableBody>
                     {user &&
                       user.txs &&
-                      user.txs.map(tx => (
-                        <TableRow key={tx.id}>
+                      user.txs.map((tx, index) => (
+                        <TableRow key={index}>
                           {tx && tx.timeStamp && (
                             <TableCell component="th" scope="tx">
                               {moment(tx.timeStamp * 1000).format('lll')}
@@ -89,11 +99,9 @@ const UserDetails = props => {
                           {tx && tx.exchangeAddress && <TableCell>{tx.exchangeAddress}</TableCell>}
                           {tx && tx.tokenSymbol && <TableCell>{tx.tokenSymbol}</TableCell>}
                           {tx && tx.tokenAmount && (
-                            <TableCell>{utils.formatEther(tx.tokenAmount)}</TableCell>
+                            <TableCell>{library.utils.fromWei(tx.tokenAmount)}</TableCell>
                           )}
-                          {tx && tx.fee && (
-                            <TableCell>{tx.fee && utils.formatEther(tx.fee)}</TableCell>
-                          )}
+                          {tx && tx.fee && <TableCell>{library.utils.fromWei(tx.fee)} </TableCell>}
                           {tx && tx.block && <TableCell>{tx.block}</TableCell>}
                         </TableRow>
                       ))}

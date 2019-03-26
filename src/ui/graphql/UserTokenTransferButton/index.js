@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { withApollo } from 'react-apollo';
 import { useForm, useField } from 'react-final-form-hooks';
+import { useWeb3Context } from 'web3-react';
 import {
   Button,
   DialogActions,
@@ -16,11 +17,12 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Paper,
 } from '@material-ui/core';
+import { ArrowDownward } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import keygen from 'keygenerator';
-import { utils } from 'ethers';
 
 const GET_ALL_USERS_STATE = gql`
   query getAllUsers {
@@ -40,6 +42,8 @@ const fieldNames = {
 };
 
 const Form = props => {
+  const web3Context = useWeb3Context();
+  const { library } = web3Context;
   const { options, currentUserEthBalance, currentUser, users, client, setIsOpen } = props;
   const [formState, setFormState] = useState({
     [fieldNames.sender]: currentUserEthBalance,
@@ -47,7 +51,7 @@ const Form = props => {
   });
 
   const updateUserTransaction = async (walletAddress, tokenAmount) => {
-    let wei = utils.parseEther(tokenAmount);
+    let wei = library.utils.toWei(tokenAmount);
     try {
       return {
         id: keygen._(),
@@ -55,8 +59,8 @@ const Form = props => {
         exchangeAddress: walletAddress,
         tokenSymbol: 'ETH',
         tokenAmount: wei,
-        fee: utils.parseEther('0.000002'), // probably use ether.js to calculate gas price
-        block: 7129320 + users.length, //
+        fee: library.utils.toWei('0.1'), // probably use ether.js to calculate gas price
+        block: 7129320 + 1 + users.length, //
       };
     } catch (error) {
       console.log(error.message);
@@ -104,6 +108,7 @@ const Form = props => {
       errors[fieldNames.receiver] = 'Required';
     }
     if (values[fieldNames.sender] > currentUserEthBalance) {
+      debugger;
       errors[fieldNames.sender] = 'Exceeded Token Balance!';
     }
     return errors;
@@ -127,7 +132,7 @@ const Form = props => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div>
+      <Paper elevation className="p-3">
         <TextField
           id={fieldNames.sender}
           name={fieldNames.sender}
@@ -142,13 +147,13 @@ const Form = props => {
           type="number"
         />
         <FormHelperText>User Token - {currentUserEthBalance}</FormHelperText>
-      </div>
+      </Paper>
 
       <div className="text-center pt-3">
-        <h1>To</h1>
+        <ArrowDownward />
       </div>
 
-      <div className="py-3">
+      <Paper elevation className="p-3">
         <FormControl fullWidth>
           <InputLabel htmlFor="age-simple">Exchange Address</InputLabel>
           <Select
@@ -167,7 +172,7 @@ const Form = props => {
             <FormHelperText>{receiver.meta.error}</FormHelperText>
           )}
         </FormControl>
-      </div>
+      </Paper>
 
       <DialogActions>
         <Button variant="outlined" type="submit" disabled={submitting}>
@@ -186,12 +191,10 @@ const UserTokenTransferButton = props => {
 
   useEffect(() => {
     getAllUsersFromState();
-    console.log('getAllUsersFromState');
   }, []);
 
   useEffect(() => {
     filterOptions();
-    console.log('filterOptions');
   }, [usersState]);
 
   const getAllUsersFromState = async () => {
@@ -214,8 +217,6 @@ const UserTokenTransferButton = props => {
       usersState
         .filter(elem => elem.id !== currentUser.id)
         .map(elem => {
-          console.log(elem);
-
           return {
             label: elem.id,
             value: elem.ethBalance,
@@ -258,7 +259,7 @@ const UserTokenTransferButton = props => {
 
   return (
     <Fragment>
-      <Button onClick={() => setIsOpen(true)} variant="outlined" color="inherit">
+      <Button onClick={() => setIsOpen(true)} variant="contained" color="primary">
         {children}
       </Button>
       {renderDialog()}

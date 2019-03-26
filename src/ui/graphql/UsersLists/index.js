@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Query, withApollo } from 'react-apollo';
+import { withApollo } from 'react-apollo';
 import { withRouter } from 'react-router-dom';
 import { useWeb3Context } from 'web3-react';
-
 import {
   Grid,
   Button,
@@ -21,15 +20,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import routeTemplates from 'ui/routes/templates';
 import { GET_ALL_USERS_STATE, GET_USERS, UPDATE_USERS_STATE } from './gql';
-
 import './index.scss';
-
-/**
- * TODO:
- *  fetch more using client instead of mutation
- *  ensure the updated eth value is update and does not get merge with the new fetch when user redirect back to home page
- *  use table instead of card
- */
 
 const UsersLists = props => {
   const web3Context = useWeb3Context();
@@ -39,7 +30,11 @@ const UsersLists = props => {
   const [users, setUsers] = useState(false);
 
   useEffect(() => {
-    setConnector('infura'); // setting up which connector to connect
+    const web3Library = web3Context.connectorName === 'infura' && web3Context.library;
+
+    if (!web3Library) {
+      setConnector('infura');
+    }
   }, []);
 
   useEffect(() => {
@@ -47,8 +42,6 @@ const UsersLists = props => {
       fetchUsers();
     }
   }, [library]);
-
-  console.log(web3Context);
 
   const fetchUsers = async () => {
     try {
@@ -61,7 +54,6 @@ const UsersLists = props => {
       const users = response && response.data && response.data.users;
       updateUsersState(users);
     } catch (error) {
-      debugger;
       enqueueSnackbar(error.message, {
         variant: 'error',
         action: (
@@ -73,21 +65,18 @@ const UsersLists = props => {
     }
   };
 
-  const fetchMoreUsers = async value => {
-    console.log('value', value);
-
+  const fetchMoreUsers = async skip => {
     try {
       const response = await client.query({
         query: GET_USERS,
         variables: {
           first: 5,
-          skip: value,
+          skip,
         },
       });
 
       const users = response && response.data && response.data.users;
       updateUsersState(users);
-      // do something to fetch more
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error',
@@ -114,9 +103,7 @@ const UsersLists = props => {
         query: GET_ALL_USERS_STATE,
       });
 
-      debugger;
-
-      const usersState = data && data.getAllUsers && data.getAllUsers.users;
+      const usersState = data && data.store && data.store.users;
 
       let updatedUsers = [];
 
@@ -125,7 +112,6 @@ const UsersLists = props => {
       } else {
         updatedUsers = users;
       }
-      debugger;
 
       await client.mutate({
         mutation: UPDATE_USERS_STATE,
@@ -157,7 +143,7 @@ const UsersLists = props => {
           <Toolbar>Users Lists</Toolbar>
           <InfiniteScroll
             pageStart={0}
-            loadMore={value => fetchMoreUsers(value)}
+            loadMore={page => fetchMoreUsers(page)}
             hasMore={true}
             loader={
               <Grid className="py-3 text-center" item xs={12}>
@@ -176,9 +162,9 @@ const UsersLists = props => {
               </TableHead>
               <TableBody>
                 {users &&
-                  users.map(user => {
+                  users.map((user, index) => {
                     return (
-                      <TableRow key={user.id}>
+                      <TableRow key={index}>
                         {user && user.id && (
                           <TableCell component="th" scope="tx">
                             {user.id}
