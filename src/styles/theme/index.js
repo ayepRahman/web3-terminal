@@ -7,34 +7,12 @@ export const theme = createMuiTheme({
   },
   palette: {
     primary: {
-      main: '#19B3B1',
+      main: '#56BDA6',
       contrastText: '#fff',
     },
     secondary: {
-      main: '#F0483E',
+      main: '#5F7AE8',
       contrastText: '#fff',
-    },
-    success: {
-      main: '#02C8A7',
-      contrastText: '#fff',
-    },
-    warning: {
-      main: '#F9BE02',
-      contrastText: '#fff',
-    },
-    error: {
-      main: '#FF646F',
-      contrastText: '#fff',
-    },
-    info: {
-      main: '#6057FE',
-      contrastText: '#fff',
-    },
-    facebook: {
-      main: '#3d5a96',
-    },
-    google: {
-      main: '#da483f',
     },
   },
 });

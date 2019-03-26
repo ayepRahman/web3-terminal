@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core';
 import moment from 'moment';
 import { utils } from 'ethers';
-import UserTokenTransferButton from 'ui/graphql/mutations/UserTokenTransferButton';
+import UserTokenTransferButton from 'ui/graphql/UserTokenTransferButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 export const GET_SINGLE_USER_BY_ID_STATE = gql`

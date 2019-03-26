@@ -1,7 +1,7 @@
 export default {
   home: '/',
   user: {
-    root: '/me',
-    details: '/me/:id',
+    root: '/users',
+    details: '/users/:id',
   },
 };
