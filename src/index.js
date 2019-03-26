@@ -9,6 +9,8 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { withClientState } from 'apollo-link-state';
 import { SnackbarProvider } from 'notistack';
 import { MuiThemeProvider } from '@material-ui/core';
+import Web3Provider from 'web3-react';
+import { connectors } from 'utils/web3-connector';
 
 // APOLLO CLIENTSTATE
 import { defaults } from 'ui/apollo/defaults';
@@ -53,13 +55,15 @@ const client = new ApolloClient({
 
 ReactDOM.render(
   <BrowserRouter>
-    <ApolloProvider client={client}>
-      <MuiThemeProvider theme={theme}>
-        <SnackbarProvider maxSnack={3}>
-          <App />
-        </SnackbarProvider>
-      </MuiThemeProvider>
-    </ApolloProvider>
+    <Web3Provider connectors={connectors} libraryName="web3.js">
+      <ApolloProvider client={client}>
+        <MuiThemeProvider theme={theme}>
+          <SnackbarProvider maxSnack={3}>
+            <App />
+          </SnackbarProvider>
+        </MuiThemeProvider>
+      </ApolloProvider>
+    </Web3Provider>
   </BrowserRouter>,
   document.getElementById('root'),
 );
