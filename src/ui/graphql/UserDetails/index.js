@@ -3,7 +3,6 @@ import { withApollo, Query } from 'react-apollo';
 import { withRouter } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
 import { useWeb3Context } from 'web3-react';
-import gql from 'graphql-tag';
 import {
   Grid,
   Table,
@@ -17,12 +16,7 @@ import {
 import moment from 'moment';
 import UserTokenTransferButton from 'ui/graphql/UserTokenTransferButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
-
-export const GET_SINGLE_USER_BY_ID_STATE = gql`
-  query getUserById($id: ID!) {
-    getUserById(id: $id) @client
-  }
-`;
+import { GET_SINGLE_USER_BY_ID_STATE } from './gql';
 
 const UserDetails = props => {
   const web3Context = useWeb3Context();
@@ -41,6 +35,7 @@ const UserDetails = props => {
   return (
     <Query query={GET_SINGLE_USER_BY_ID_STATE} variables={{ id: userId }}>
       {({ loading, data }) => {
+        console.log(data);
         const user = data && data.getUserById && data.getUserById.user;
 
         if (loading) return <LinearProgress />;

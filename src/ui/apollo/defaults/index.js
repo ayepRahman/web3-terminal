@@ -42,6 +42,7 @@
 export const defaults = {
   store: {
     users: [],
-    __typename: 'Store',
+    __typename: 'Users',
   },
+  __typename: 'Store',
 };

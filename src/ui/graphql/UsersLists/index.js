@@ -48,7 +48,7 @@ const UsersLists = props => {
       const response = await client.query({
         query: GET_USERS,
         variables: {
-          first: 5,
+          first: 10,
         },
       });
       const users = response && response.data && response.data.users;

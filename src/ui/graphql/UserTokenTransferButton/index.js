@@ -1,6 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
 import { withApollo } from 'react-apollo';
 import { useForm, useField } from 'react-final-form-hooks';
 import { useWeb3Context } from 'web3-react';
@@ -23,18 +22,7 @@ import { ArrowDownward } from '@material-ui/icons';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import keygen from 'keygenerator';
-
-const GET_ALL_USERS_STATE = gql`
-  query getAllUsers {
-    getAllUsers @client
-  }
-`;
-
-const UPDATE_USERS_STATE = gql`
-  mutation updateUsers($users: [User]) {
-    updateUsers(users: $users) @client
-  }
-`;
+import { GET_ALL_USERS_STATE, UPDATE_USERS_STATE } from './gql';
 
 const fieldNames = {
   sender: 'sender',
@@ -52,6 +40,7 @@ const Form = props => {
 
   const updateUserTransaction = async (walletAddress, tokenAmount) => {
     let wei = library.utils.toWei(tokenAmount);
+    console.log('wei', wei);
     try {
       return {
         id: keygen._(),
@@ -203,7 +192,7 @@ const UserTokenTransferButton = props => {
         query: GET_ALL_USERS_STATE,
       });
 
-      const users = data && data.getAllUsers && data.getAllUsers.users;
+      const users = data && data.store && data.store.users;
 
       setUsersState(users);
     } catch (error) {
