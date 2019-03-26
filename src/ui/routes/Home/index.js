@@ -22,6 +22,13 @@ import routeTemplates from 'ui/routes/templates';
 import gql from 'graphql-tag';
 import './index.scss';
 
+/**
+ * TODO:
+ *  fetch more using client instead of mutation
+ *  ensure the updated eth value is update and does not get merge with the new fetch when user redirect back to home page
+ *  use table instead of card
+ */
+
 const etherScanApiKeys =
   process.env.REACT_APP_ETHERSCAN_API_KEYS || 'C852K7V62PDKJ5AG3VRQCIRX55ZAWC8NWF';
 
