@@ -103,6 +103,13 @@ const UsersLists = props => {
       console.log('response', response);
       const users = response && response.data && response.data.users;
 
+      users.forEach(user => {
+        const userEthBalance = getUserEthBalance(user.id);
+        user.ethBalance = userEthBalance;
+      });
+
+      console.log('USERS', users);
+
       await updateUsersState(users);
     } catch (error) {
       enqueueSnackbar(error.message, {
