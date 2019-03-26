@@ -9,6 +9,8 @@ export default {
       },
     };
 
+    debugger;
+
     cache.writeData({ data });
     return null;
   },

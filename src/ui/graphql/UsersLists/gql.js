@@ -37,7 +37,7 @@ export const GET_USERS = gql`
 
 export const GET_ALL_USERS_STATE = gql`
   query getAllUsers {
-    users @client
+    getAllUsers @client
   }
 `;
 

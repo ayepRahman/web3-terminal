@@ -58,17 +58,7 @@ const UsersLists = props => {
           first: 5,
         },
       });
-      let users = response && response.data && response.data.users;
-
-      await Promise.all(
-        users.map(async user => {
-          const wei = await library.eth.getBalance(user.id);
-          const userEthBalance = library.utils.fromWei(wei);
-          user.ethBalance = userEthBalance;
-        }),
-      );
-
-      console.log(users);
+      const users = response && response.data && response.data.users;
       updateUsersState(users);
     } catch (error) {
       debugger;
@@ -83,15 +73,50 @@ const UsersLists = props => {
     }
   };
 
-  const updateUsersState = async users => {
-    console.log('TRIGGER');
+  const fetchMoreUsers = async value => {
+    console.log('value', value);
+
     try {
-      debugger;
+      const response = await client.query({
+        query: GET_USERS,
+        variables: {
+          first: 5,
+          skip: value,
+        },
+      });
+
+      const users = response && response.data && response.data.users;
+      updateUsersState(users);
+      // do something to fetch more
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        action: (
+          <Button color="default" variant="flat" size="small">
+            Close
+          </Button>
+        ),
+      });
+    }
+  };
+
+  const updateUsersState = async users => {
+    try {
+      await Promise.all(
+        users.map(async user => {
+          const wei = await library.eth.getBalance(user.id);
+          const userEthBalance = library.utils.fromWei(wei);
+          user.ethBalance = userEthBalance;
+        }),
+      );
+
       const { data } = await client.query({
         query: GET_ALL_USERS_STATE,
       });
 
-      const usersState = data && data.users;
+      debugger;
+
+      const usersState = data && data.getAllUsers && data.getAllUsers.users;
 
       let updatedUsers = [];
 
@@ -105,32 +130,12 @@ const UsersLists = props => {
       await client.mutate({
         mutation: UPDATE_USERS_STATE,
         variables: {
-          updatedUsers,
+          users: updatedUsers,
         },
       });
 
-      debugger;
-
       setUsers(updatedUsers);
       setFetching(false);
-
-      debugger;
-    } catch (error) {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        action: (
-          <Button color="default" variant="flat" size="small">
-            Close
-          </Button>
-        ),
-      });
-    }
-  };
-
-  const fetchMore = async () => {
-    try {
-      // const response = await client.mutate({})
-      // do something to fetch more
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error',
@@ -148,35 +153,31 @@ const UsersLists = props => {
   return (
     <Grid className="py-5" container justify="center">
       <Grid item xs={10} md={8}>
-        <h1>Users Lists</h1>
-      </Grid>
-
-      <Grid item xs={10} md={8}>
         <Paper>
-          <Toolbar>Users</Toolbar>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Wallet Address</TableCell>
-                <TableCell>Eth Balance</TableCell>
-                <TableCell>Transaction No.</TableCell>
-                <TableCell>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users &&
-                users.map(user => {
-                  return (
-                    <InfiniteScroll
-                      pageStart={0}
-                      loadMore={() => fetchMore()}
-                      hasMore={true}
-                      loader={
-                        <Grid className="pt-5 text-center" item xs={12}>
-                          <CircularProgress />
-                        </Grid>
-                      }
-                    >
+          <Toolbar>Users Lists</Toolbar>
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={value => fetchMoreUsers(value)}
+            hasMore={true}
+            loader={
+              <Grid className="py-3 text-center" item xs={12}>
+                <CircularProgress />
+              </Grid>
+            }
+          >
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Wallet Address</TableCell>
+                  <TableCell>Eth Balance</TableCell>
+                  <TableCell>Transaction No.</TableCell>
+                  <TableCell>Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {users &&
+                  users.map(user => {
+                    return (
                       <TableRow key={user.id}>
                         {user && user.id && (
                           <TableCell component="th" scope="tx">
@@ -196,6 +197,8 @@ const UsersLists = props => {
                         {user && user.id && (
                           <TableCell component="th" scope="tx">
                             <Button
+                              color="primary"
+                              variant="contained"
                               size="small"
                               onClick={() =>
                                 history.push(`${routeTemplates.user.root}/${user.id}`, { user })
@@ -206,11 +209,11 @@ const UsersLists = props => {
                           </TableCell>
                         )}
                       </TableRow>
-                    </InfiniteScroll>
-                  );
-                })}
-            </TableBody>
-          </Table>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </InfiniteScroll>
         </Paper>
       </Grid>
     </Grid>

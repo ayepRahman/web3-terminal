@@ -68,6 +68,8 @@ export default {
     const { cache } = context;
     console.log('getUserById - resolver', cache);
 
+    debugger;
+
     try {
       const { store } = cache.readQuery({
         query: GET_ALL_USERS_STATE,
