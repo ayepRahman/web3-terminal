@@ -27,7 +27,6 @@ const UserDetails = props => {
   return (
     <Query query={GET_SINGLE_USER_BY_ID_STATE} variables={{ id: userId }}>
       {({ loading, data }) => {
-        console.log(data);
         const user = data && data.getUserById && data.getUserById.user;
 
         if (loading) return <LinearProgress />;

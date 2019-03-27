@@ -43,7 +43,6 @@ const Form = props => {
 
   const updateUserTransaction = async (walletAddress, tokenAmount) => {
     let wei = library.utils.toWei(tokenAmount);
-    console.log('wei', wei);
     try {
       return {
         id: keygen._(),
@@ -128,7 +127,6 @@ const Form = props => {
       errors[fieldNames.receiver] = 'Required';
     }
     if (values[fieldNames.sender] > currentUser.ethBalance) {
-      debugger;
       errors[fieldNames.sender] = 'Exceeded Token Balance!';
     }
     return errors;

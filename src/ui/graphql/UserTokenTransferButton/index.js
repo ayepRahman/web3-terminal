@@ -22,8 +22,6 @@ const UserTokenTransferButton = props => {
   const [sendingTransaction, setSendingTransaction] = useState(false);
   const { children, currentUser, client } = props;
 
-  console.log('sendingTransaction', sendingTransaction);
-
   useEffect(() => {
     getAllUsersFromState();
   }, []);

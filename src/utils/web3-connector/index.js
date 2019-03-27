@@ -6,7 +6,6 @@ const {
 } = Connectors;
 
 const INFURA_API_KEY = process.env.REACT_APP_INFURA_API_KEY || 'e99b01ab413f41e1975e2189dbe507ae';
-console.log('INFURA_API_KEY', INFURA_API_KEY);
 
 // const metaMask = new MetaMaskConnector({ supportedNetworks: 1 });
 // const metaMask = new MetaMaskConnector();
