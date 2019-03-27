@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { withApollo, Query } from 'react-apollo';
 import { withRouter } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
@@ -20,17 +20,9 @@ import { GET_SINGLE_USER_BY_ID_STATE } from './gql';
 
 const UserDetails = props => {
   const web3Context = useWeb3Context();
-  const { setConnector, library } = web3Context;
+  const { library } = web3Context;
   const { match } = props;
   const userId = match && match.params && match.params.id;
-
-  useEffect(() => {
-    const web3Library = web3Context.connectorName === 'infura' && web3Context.library;
-
-    if (!web3Library) {
-      setConnector('infura');
-    }
-  }, []);
 
   return (
     <Query query={GET_SINGLE_USER_BY_ID_STATE} variables={{ id: userId }}>
