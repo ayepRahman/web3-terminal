@@ -157,14 +157,15 @@ const Form = props => {
           fullWidth
           error={!!sender.meta.touched && !!sender.meta.error}
           label={
-            !!sender.meta.touched && !!sender.meta.error ? sender.meta.error : 'Token Amount (Eth)'
+            !!sender.meta.touched && !!sender.meta.error
+              ? sender.meta.error
+              : `From - ${currentUser.id}`
           }
           value={formState[fieldNames.sender]}
-          defaultValue={currentUser.ethBalance}
+          placeholder={currentUser.ethBalance}
           onChange={handleChange(sender)}
           type="number"
         />
-        <FormHelperText>User Token - {currentUser.ethBalance}</FormHelperText>
       </Paper>
 
       <div className="text-center pt-3">
@@ -173,7 +174,7 @@ const Form = props => {
 
       <Paper elevation className="p-3">
         <FormControl fullWidth>
-          <InputLabel htmlFor="age-simple">Exchange Address</InputLabel>
+          <InputLabel htmlFor="age-simple">To</InputLabel>
           <Select
             id={fieldNames.receiver}
             name={fieldNames.receiver}
