@@ -1,6 +1,10 @@
 # web3-terminal
 
-![](web3-terminal.gif)
+## Motive for this project
+
+Bootstrap a simple project that uses the new React Hooks, Apollo Client. User are able to see list of users result from calling uriswap api. User are able to see the recent transactions made. User are able to make a fake transactions and able to see the updated tansaction in the table.
+
+![](web3terminal.gif)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -29,12 +33,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
-
-## Motive for this project
-
-Bootstrap a simple project that uses the new React Hooks, Apollo Client. User are able to see list of users result from calling uriswap api. User are able to see the recent transactions made. User are able to make a fake transactions and able to see the updated tansaction in the table.
-
-## GIF:
 
 ## Checklist
 
