@@ -2,7 +2,7 @@
 
 ## Motive for this project
 
-Bootstrap a simple project that uses the new React Hooks, Apollo Client. User are able to see list of users result from calling uriswap api. User are able to see the recent transactions made. User are able to make a fake transactions and able to see the updated tansaction in the table.
+A browser GUI that interact with uniswap api's. Bootstrap a simple project that uses the new React Hooks, Apollo Client for state management and Web3.js. User are able to see list of users result from calling uniswap api. User are able to see the recent transactions made. User are able to make a fake transactions and able to see the updated tansaction in the table.
 
 ![](web3terminal.gif)
 
